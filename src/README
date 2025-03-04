@@ -1,0 +1,18 @@
+
+mapperii parcurg fisierele de intrare linie cu linie, extrag cuvintele si le curata de caractere care nu sunt litere. dupa aceea transforma cuvintele in litere mici si construiesc un map local in
+care fiecare cuvant este asociat cu indexul fisierului din care provine. mapul local foloseste o structura map<string, set<int>> unde:
+-string reprezinta cuvintele extrase
+-set<int reprezinta setul de indexuri ale fisierelor in care apare cuvantul. set-ul asigura eliminarea duplicatelor
+la final mapul local este combinat cu mapul din main folosind un mutex pentru sincronizare
+
+reducerii proceseaza cuvintele din mapul din main si le grupeaza in functie de prima litera. fiecare reducer preia o litera si creeaza un fisier de output care contine cuvintele ce incep cu
+acea litera si lista de fisiere in care apar. cuvintele sunt sortate in functie de frecventa lor
+folosind o structura multimap<set<int>, string> unde
+-set<int> reprezinta setul de indexuri ale fisierelor folosit pentru a calcula frecventa cuvantului
+-string reprezinta cuvantul
+
+pentru sincronizare am folosi:
+-un mutex pentru mapperi cand acestia citesc fisierele, pentru a nu deschide mai multi acelasi fisier
+-un mutex pentru mapul din mapper pentru ca threadurile sa adauge in acesta pe rand
+-un mutex pentru alfabet pentru reduceri, ca acestia sa ia corect si pe rand literele din alfabet
+-o bariera pentru a asigura faptul ca reducerii pornesc dupa terminarea tuturor mapperilor
